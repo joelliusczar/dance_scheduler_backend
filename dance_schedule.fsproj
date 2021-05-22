@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="DSUtilities.fs" />
+    <Compile Include="DanceDef.fs" />
+    <Compile Include="Dance.fs" />
+    <Compile Include="Teams.fs" />
+    <Compile Include="Round.fs" />
+    <Compile Include="ImportData.fs" />
+    <Compile Include="RoundBuilder.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>
