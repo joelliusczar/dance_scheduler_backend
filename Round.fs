@@ -34,11 +34,11 @@ module Round
 
     let strFormatRound round =
         let header1 = $"Dance {round.DanceDef.FullName} Heat# {round.Number + 1}\n"
-        let header2 = $"Leader|Follower|Age Group|Skill Level\n"
+        let header2 = $"Leader | Follower | Age Group | Skill Level\n"
         let entries = 
             round.TeamEntries
             |> Seq.map (fun e -> 
-                $"{e.Team.Person1.Name} | {e.Team.Person2.Name}"
+                $"{e.Team.Person1.Name} | {e.Team.Person2.Name} | {e.Dance.AgeGroup} | {e.Dance.SkillLevl}"
             )
             |> String.concat "\n"
         $"{header1}{header2}{entries}\n"

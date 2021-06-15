@@ -1,11 +1,18 @@
 module DanceDef
 
+    type BaseDef =
+        {
+            Name: string
+            FullName: string
+            Order: int
+        }
+
     type DanceDef = 
         {
             Name: string
             FullName: string
-            Style: string
-            Plurality: string
+            Style: BaseDef
+            Plurality: BaseDef
             Order: int
             Fits: string list
         }

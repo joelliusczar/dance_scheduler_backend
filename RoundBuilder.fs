@@ -104,10 +104,17 @@ module RoundBuilder
                     rankedEligible 
                     round
             let buildRemainingRounds = buildRoundsForStyle rankDefs relevantDances
-            buildRemainingRounds 
-                remainingTeamsAfterRound 
-                (danceIdx + 1) 
-                (round2::rounds)
+            match List.length round2.TeamEntries > 0 with
+            | true ->
+                buildRemainingRounds 
+                    remainingTeamsAfterRound 
+                    (danceIdx + 1) 
+                    (round2::rounds)
+            | false -> 
+                buildRemainingRounds
+                    remainingTeamsAfterRound
+                    (danceIdx + 1) 
+                    rounds
 
     let filterDanceSetForTeams allTeams relevantDancesKeys =
         allTeams
@@ -130,20 +137,24 @@ module RoundBuilder
             danceLookup 
             |> Seq.map (fun kvp -> kvp.Value)
             |> Seq.map (fun v -> v.Style)
+            |> Seq.sortBy (fun s -> s.Order)
+            |> Seq.map (fun s -> s.Name)
             |> Seq.distinct
         let pluralities = 
             danceLookup
             |> Seq.map (fun kvp -> kvp.Value)
             |> Seq.map (fun v -> v.Plurality)
+            |> Seq.sortBy (fun p -> p.Order)
+            |> Seq.map (fun p -> p.Name)
             |> Seq.distinct
 
         Seq.allPairs styles pluralities
-        |> Seq.map (fun (style, plurality) ->
+        |> Seq.map (fun (styleName, pluralityName) ->
             let relevantDances = 
                 danceLookup 
                 |> Seq.map (fun kvp -> kvp.Value)
-                |> Seq.filter (fun v -> v.Plurality = plurality)
-                |> Seq.filter (fun v -> v.Style = style)
+                |> Seq.filter (fun v -> v.Plurality.Name = pluralityName)
+                |> Seq.filter (fun v -> v.Style.Name = styleName)
                 |> Seq.filter (fun v -> Set.contains v.Name presentDanceSet)
                 |> Seq.sortBy (fun v -> v.Order)
                 |> Seq.toList

@@ -24,8 +24,10 @@ module ImportData
     let AGE_GROUP_DEF_COL = 5
     let AGE_GROUP_DEF_MOD_COL = 6
     let SKILL_LEVEL_DEF_COL = 7
-    let MULTI_AGE_GROUP = 8
-    let MULTI_SKILL_LEVEL = 9
+    let MULTI_AGE_GROUP_COL = 8
+    let MULTI_SKILL_LEVEL_COL = 9
+    let STYLE_DISCREET_COL = 10
+    let PLURALITY_DISCREET_COL = 11
 
     let personCollect (values: string[]) colKey (people: Map<string, Person>) = 
         match people.ContainsKey (values.[colKey].Trim()) with
@@ -60,7 +62,6 @@ module ImportData
                     Dances = Map.empty
                     LastRoundNumber = 0
                 }
-            printfn $"_{values.[DANCE_COL]}_"
             let dance = { 
                 DanceDef = danceLookup.[values.[DANCE_COL].Trim()]
                 AgeGroup = values.[AGE_GROUP_COL].Trim()
@@ -93,7 +94,17 @@ module ImportData
         _positionRankValues values 0
 
 
-
+    let toBaseDefsDict (values: string array array) col =
+        seq {
+            for idx in 0..values.Length - 1 do
+                let name = values.[idx].[col].Trim()
+                let def = {
+                    Name = name
+                    FullName = name
+                    Order = idx
+                }
+                yield (name, def)
+        } |> Map.ofSeq
 
 
 
@@ -102,15 +113,19 @@ module ImportData
         let allLines = 
             reader.ReadToEnd().Split([|'\n'|])
             |> Array.map (fun l -> l.Split([|','|]))
+        let stylesMap = toBaseDefsDict allLines STYLE_DISCREET_COL
+        let pluralityMap = toBaseDefsDict allLines PLURALITY_DISCREET_COL
         let danceDefs = 
             seq {
                 for idx in 0..allLines.Length - 1 do
                     let name = allLines.[idx].[DANCE_CODE_COL].Trim()
+                    let styleKey = allLines.[idx].[STYLE_COL].Trim()
+                    let pluralityKey = allLines.[idx].[PLURALITY_COL].Trim()
                     let def = {
                         Name = name
                         FullName = allLines.[idx].[DANCE_FULL_NAME_COL].Trim()
-                        Style = allLines.[idx].[STYLE_COL].Trim()
-                        Plurality = allLines.[idx].[PLURALITY_COL].Trim()
+                        Style = stylesMap.[styleKey]
+                        Plurality = pluralityMap.[pluralityKey]
                         Order = idx
                         Fits = 
                             allLines.[idx].[RELATED_DANCES_COL]
@@ -139,12 +154,12 @@ module ImportData
                 |> positionRankValues 
                 |> Map.ofSeq
             MultiDanceAgeGroup = 
-                colToSeq2 MULTI_AGE_GROUP 
+                colToSeq2 MULTI_AGE_GROUP_COL 
                 |> List.ofSeq
                 |> positionRankValues 
                 |> Map.ofSeq
             MultiDanceSkillLevels = 
-                colToSeq2 MULTI_SKILL_LEVEL 
+                colToSeq2 MULTI_SKILL_LEVEL_COL 
                 |> List.ofSeq
                 |> positionRankValues 
                 |> Map.ofSeq
