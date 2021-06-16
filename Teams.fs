@@ -2,13 +2,10 @@ module Teams
     open DSUtilities
     open DanceDef
     open Dance
-
+    open Person
+    
     let update = Map.add
 
-    type Person = 
-        {
-            Name: string
-        }
 
     type TeamDef =
         {
@@ -27,6 +24,7 @@ module Teams
 
     type TeamEntry = 
         {
+            RoundNumber: int
             Team: TeamDef
             Dance: Dance
         }

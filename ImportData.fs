@@ -3,6 +3,7 @@ module ImportData
     open System.IO
     open DanceDef
     open Dance
+    open Person
     open Teams
 
     //entries columns
