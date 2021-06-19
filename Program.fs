@@ -7,14 +7,17 @@ open DanceDef
 open ImportData
 open Round
 open RoundBuilder
+open ResultsPrinter
 
 let defsFileName = "Dance Comp - Definitions.csv"
 let fileName = "Dance Comp - Entries.csv"
 try
     let danceDefs, rankDefs = using(new StreamReader(File.OpenRead(defsFileName))) (fun f ->
+        printfn "Building defs"
         buildDefsFromStream f
     )
 
+    printfn "Building defs"
     try
         using(new StreamReader(File.OpenRead(fileName))) (fun f ->
             //1 + 1
@@ -33,11 +36,19 @@ try
                     allTeams 
                     |> Seq.toList
             do listOfRoundList 
-            |> Seq.take 1
-            |> Seq.iter (fun l ->
-                let output = strFormatAllRounds l
-                printfn "%s" output
-            )
+                |> Seq.iteri (fun idx roundList ->
+
+                    // let output = strFormatAllRounds formatCsvRound roundList 
+                    // printfn "%s" output
+                    try
+                        let newFile = idx < 1
+                        using(new StreamWriter("heats.csv", not newFile)) (fun f ->
+                            for line in strFormatAllRounds formatCsvRound roundList do
+                                f.WriteLine(line)
+                        )
+                    with
+                        | _ -> printfn "An error happened while outputting results"
+                )
         )
     with
         | :? System.IO.FileNotFoundException -> printfn "%s was not there" fileName

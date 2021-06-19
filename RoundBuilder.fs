@@ -2,12 +2,8 @@ module RoundBuilder
     open DanceDef
     open Teams
     open Round
+    open RoundTeams
 
-
-    let eligibleTeams teams dance = 
-        teams 
-        |> Seq.filter (fun p -> getDanceCount p dance > 0)
-        |> Seq.toList
 
     let markAllRecentTeams allTeams usedTeams =
         match usedTeams with

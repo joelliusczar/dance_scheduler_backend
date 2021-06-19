@@ -12,8 +12,10 @@
     <Compile Include="Person.fs" />
     <Compile Include="Teams.fs" />
     <Compile Include="Round.fs" />
+    <Compile Include="RoundTeams.fs" />
     <Compile Include="ImportData.fs" />
     <Compile Include="RoundBuilder.fs" />
+    <Compile Include="ResultsPrinter.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

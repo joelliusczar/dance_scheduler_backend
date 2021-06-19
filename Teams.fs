@@ -72,3 +72,14 @@ module Teams
         allTeams 
         |> Seq.collect (fun t -> t.Dances |> Seq.map (fun kvp -> kvp.Key))
         |> Set.ofSeq
+
+    let selectTeamMate personName teamEntry = 
+        match personName with
+        | p when p = teamEntry.Team.Person1 -> Some teamEntry.Team.Person2
+        | p when p = teamEntry.Team.Person2 -> Some teamEntry.Team.Person1
+        | _ -> None
+
+    let eligibleTeams teams dance = 
+        teams 
+        |> Seq.filter (fun p -> getDanceCount p dance > 0)
+        |> Seq.toList
