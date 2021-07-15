@@ -4,6 +4,7 @@ obj/
 
 .DS_Store
 
-Dance Comp - Entries.csv
 
-heats.csv
+
+*.csv
+!'Dance Comp - Definitions.csv'

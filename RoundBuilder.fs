@@ -17,9 +17,9 @@ module RoundBuilder
             |> List.map (fun t ->
                 let personMatch1 = Set.contains t.TeamDef.Person1 usedPeople 
                 let personMatch2 = Set.contains t.TeamDef.Person2 usedPeople 
-                match personMatch1 || personMatch2 with
-                | false -> t
-                | true -> { t with LastRoundNumber = lastRoundNumber}
+                if personMatch1 || personMatch2
+                then t
+                else { t with LastRoundNumber = lastRoundNumber}
             )
         | _ -> []
 
@@ -58,18 +58,18 @@ module RoundBuilder
         | Some team -> 
             match tryConsumeDance team round with
             | None, _ -> 
-                match getDanceCount team round.DanceDef < 1 with
-                | false -> buildRound dances allTeams eligible2 round
-                | true -> 
+                if getDanceCount team round.DanceDef < 1
+                then buildRound dances allTeams eligible2 round
+                else
                     let remainingTeams =  allTeams |> Seq.filter (fun c -> 
                         c.TeamDef <> team.TeamDef)
                     buildRound dances remainingTeams eligible2 round
             | Some dance, team2 ->
                 let round2 = updateRoundWithTeam round team2.TeamDef dance
                 let replacedTeams = allTeams |> Seq.map (fun t ->
-                    match t.TeamDef = team2.TeamDef with
-                    | false -> t
-                    | true -> team2
+                    if t.TeamDef = team2.TeamDef
+                    then team2
+                    else t
                     )
                 buildRound dances replacedTeams eligible2 round2
                         
@@ -80,9 +80,13 @@ module RoundBuilder
         allTeams 
         danceIdx 
         rounds =
-        match List.isEmpty relevantDances || Seq.isEmpty allTeams with
-        | true -> rounds
-        | false ->
+        // let t = allTeams |> List.ofSeq
+        // printfn $"teams counts {t}"
+        // let r = relevantDances |> Seq.map (fun d -> d.Name) |> List.ofSeq
+        // printfn $"relevant {r}"
+        if List.isEmpty relevantDances || Seq.isEmpty allTeams
+        then rounds
+        else
             let danceDef = relevantDances.[danceIdx % relevantDances.Length]
             let remainingTeams = getRemainingTeams allTeams relevantDances
             let eligible = eligibleTeams remainingTeams danceDef
@@ -100,13 +104,13 @@ module RoundBuilder
                     rankedEligible 
                     round
             let buildRemainingRounds = buildRoundsForStyle rankDefs relevantDances
-            match List.length round2.TeamEntries > 0 with
-            | true ->
+            if List.length round2.TeamEntries > 0
+            then
                 buildRemainingRounds 
                     remainingTeamsAfterRound 
                     (danceIdx + 1) 
                     (round2::rounds)
-            | false -> 
+            else
                 buildRemainingRounds
                     remainingTeamsAfterRound
                     (danceIdx + 1) 

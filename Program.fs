@@ -12,8 +12,9 @@ open ResultsPrinter
 let defsFileName = "Dance Comp - Definitions.csv"
 let fileName = "Dance Comp - Entries.csv"
 try
-    let danceDefs, rankDefs = using(new StreamReader(File.OpenRead(defsFileName))) (fun f ->
+    let compDefs = using(new StreamReader(File.OpenRead(defsFileName))) (fun f ->
         printfn "Building defs"
+        f.ReadLine() |> ignore //swollowing the label row
         buildDefsFromStream f
     )
 
@@ -22,33 +23,62 @@ try
         using(new StreamReader(File.OpenRead(fileName))) (fun f ->
             //1 + 1
             printfn "About to buld teams"
-            let _, teams = buildDataFromStream f danceDefs Map.empty Map.empty
-            printfn "Teams built"
-            let allTeams =
-                teams
-                |> Seq.map (fun kvp -> kvp.Value) 
-                |> Seq.toList
-            printfn "About to buld rounds"
-            let listOfRoundList = 
-                buildComp 
-                    danceDefs 
-                    rankDefs 
-                    allTeams 
+            f.ReadLine() |> ignore //swollowing the label row
+            let _, teams, _ = 
+                buildDataFromStream 
+                    f 
+                    compDefs 
+                    Map.empty 
+                    Map.empty 
+                    List.empty
+            match teams with
+            | Some teams ->
+                printfn "Teams built"
+                let allTeams =
+                    teams
+                    |> Seq.map (fun kvp -> kvp.Value) 
                     |> Seq.toList
-            do listOfRoundList 
-                |> Seq.iteri (fun idx roundList ->
+                printfn "About to buld rounds"
+                let listOfRoundList = 
+                    buildComp 
+                        compDefs.DanceDefs 
+                        compDefs.RankDefs 
+                        allTeams 
+                        |> Seq.toList
+                printfn "About to print rounds"
+                do listOfRoundList 
+                    |> Seq.concat
+                    |> Seq.iteri (fun idx round ->
 
-                    // let output = strFormatAllRounds formatCsvRound roundList 
-                    // printfn "%s" output
-                    try
-                        let newFile = idx < 1
-                        using(new StreamWriter("heats.csv", not newFile)) (fun f ->
-                            for line in strFormatAllRounds formatCsvRound roundList do
+                        // let output = strFormatAllRounds formatCsvRound roundList 
+                        // printfn "%s" output
+                        try
+                            let newFile = idx < 1
+                            using(new StreamWriter("heats.csv", not newFile)) (fun f ->
+                                let line = formatCsvRound compDefs round (idx + 1)
                                 f.WriteLine(line)
-                        )
-                    with
-                        | _ -> printfn "An error happened while outputting results"
-                )
+                            )
+                        with
+                            | _ -> printfn "An error happened while outputting results"
+                    )
+                printfn "build scores"
+                try
+                    using(new StreamWriter("scores.csv", false)) (fun f ->
+                        f.WriteLine(scoreHeader)
+                        do listOfRoundList 
+                            |> Seq.concat
+                            |> Seq.iteri (fun idx round ->
+
+                                // let output = strFormatAllRounds formatCsvRound roundList 
+                                // printfn "%s" output
+            
+                                let line = formatScoreRound compDefs round (idx + 1)
+                                f.WriteLine(line)
+                            )
+                    )
+                with
+                    | _ -> printfn "An error happened while outputting results"
+            | None -> printfn "Ended early"
         )
     with
         | :? System.IO.FileNotFoundException -> printfn "%s was not there" fileName

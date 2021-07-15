@@ -15,13 +15,22 @@ module DanceDef
             Plurality: BaseDef
             Order: int
             Fits: string list
+            ComponentDanceKeys: string list
         }
 
 
     type RankDictionary =
         {
-            AgeGroups: Map<string, int>
-            SkillLevels: Map<string, int>
-            MultiDanceAgeGroup: Map<string, int>
-            MultiDanceSkillLevels: Map<string, int>
+            AgeGroups: Map<string, BaseDef>
+            SkillLevels1: Map<string, BaseDef>
+            SkillLevels2: Map<string, BaseDef>
+            QualificationLevels: Map<string, int>
+            Roles: Map<string, int>
+        }
+
+    type CompetitionDefinitions =
+        {
+            DanceDefs: Map<string, DanceDef>
+            RankDefs: RankDictionary
+            IgnoredKeys: Set<string>
         }

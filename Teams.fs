@@ -11,13 +11,14 @@ module Teams
         {
             Person1: Person
             Person2: Person
+            TeamNumber: int
+            LeaderNumber: int
         }
 
     type Team = 
         {
             Dances: Map<string, list<Dance>>
             TeamDef: TeamDef
-            TeamNumber: int
             LastRoundNumber: int
         }
 
@@ -40,6 +41,9 @@ module Teams
         | None -> (None, team)
         | Some dance -> 
             let shrunk = entries |> removeN 1 (fun d -> d = dance)
+            // let dances = if List.length shrunk > 0
+            //     then team.Dances |> update danceDef.Name shrunk
+
             (
                 Some dance, 
                 { team with Dances = team.Dances |> update danceDef.Name shrunk }

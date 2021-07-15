@@ -9,10 +9,13 @@
     <Compile Include="DSUtilities.fs" />
     <Compile Include="DanceDef.fs" />
     <Compile Include="Dance.fs" />
+    <Compile Include="Studio.fs" />
     <Compile Include="Person.fs" />
     <Compile Include="Teams.fs" />
     <Compile Include="Round.fs" />
     <Compile Include="RoundTeams.fs" />
+    <Compile Include="SoloDance.fs" />
+    <Compile Include="Score.fs" />
     <Compile Include="ImportData.fs" />
     <Compile Include="RoundBuilder.fs" />
     <Compile Include="ResultsPrinter.fs" />

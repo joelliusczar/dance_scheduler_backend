@@ -6,9 +6,9 @@ module RoundTeams
     let blockPerson1 = round.Impossible.Contains team.TeamDef.Person1.Name
     let blockPerson2 = round.Impossible.Contains team.TeamDef.Person2.Name
     let blockTeam = blockPerson1 || blockPerson2
-    match blockTeam with
-    | true -> (None, team)
-    | false -> 
+    if blockTeam
+    then (None, team)
+    else
         let dance, team2 = consumeDance team round.DanceDef
         (dance, { team2 with LastRoundNumber = round.Number + 1 })
 
